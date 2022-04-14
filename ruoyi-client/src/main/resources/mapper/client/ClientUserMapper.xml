@@ -1,0 +1,85 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.client.mapper.ClientUserMapper">
+
+    <resultMap type="ClientUser" id="ClientUserResult">
+        <result property="id"    column="id"    />
+        <result property="phone"    column="phone"    />
+        <result property="state"    column="state"    />
+        <result property="device"    column="device"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="ip"    column="ip"    />
+    </resultMap>
+
+    <sql id="selectClientUserVo">
+        select id, phone, state, device, create_time, update_time, ip from client_user
+    </sql>
+
+    <select id="selectClientUserList" parameterType="ClientUser" resultMap="ClientUserResult">
+        <include refid="selectClientUserVo"/>
+        <where>
+            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+            <if test="state != null "> and state = #{state}</if>
+            <if test="device != null  and device != ''"> and device = #{device}</if>
+            <if test="ip != null  and ip != ''"> and ip = #{ip}</if>
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                AND date_format(create_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                AND date_format(create_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectClientUserById" parameterType="Long" resultMap="ClientUserResult">
+        <include refid="selectClientUserVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertClientUser" parameterType="ClientUser" useGeneratedKeys="true" keyProperty="id">
+        insert into client_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="phone != null and phone != ''">phone,</if>
+            <if test="state != null">state,</if>
+            <if test="device != null">device,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="ip != null">ip,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="phone != null and phone != ''">#{phone},</if>
+            <if test="state != null">#{state},</if>
+            <if test="device != null">#{device},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="ip != null">#{ip},</if>
+         </trim>
+    </insert>
+
+    <update id="updateClientUser" parameterType="ClientUser">
+        update client_user
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="phone != null and phone != ''">phone = #{phone},</if>
+            <if test="state != null">state = #{state},</if>
+            <if test="device != null">device = #{device},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="ip != null">ip = #{ip},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteClientUserById" parameterType="Long">
+        delete from client_user where id = #{id}
+    </delete>
+
+    <delete id="deleteClientUserByIds" parameterType="String">
+        delete from client_user where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

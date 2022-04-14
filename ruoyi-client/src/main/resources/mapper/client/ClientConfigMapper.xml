@@ -1,0 +1,77 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.client.mapper.ClientConfigMapper">
+
+    <resultMap type="ClientConfig" id="ClientConfigResult">
+        <result property="id"    column="id"    />
+        <result property="key"    column="key"    />
+        <result property="value"    column="value"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="updateTime"    column="update_time"    />
+        <result property="remark"    column="remark"    />
+    </resultMap>
+
+    <sql id="selectClientConfigVo">
+        select id, `key`, `value`, create_time,remark, update_time from client_config
+    </sql>
+
+    <select id="selectClientConfigList" parameterType="ClientConfig" resultMap="ClientConfigResult">
+        <include refid="selectClientConfigVo"/>
+        <where>
+            <if test="key != null  and key != ''"> and key = #{key}</if>
+            <if test="value != null  and value != ''"> and value = #{value}</if>
+        </where>
+    </select>
+
+    <select id="selectClientConfigById" parameterType="Long" resultMap="ClientConfigResult">
+        <include refid="selectClientConfigVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertClientConfig" parameterType="ClientConfig">
+        insert into client_config
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="key != null and key != ''">`key`,</if>
+            <if test="value != null and value != ''">`value`,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="updateTime != null">update_time,</if>
+            <if test="remark != null">remark,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="key != null and key != ''">#{key},</if>
+            <if test="value != null and value != ''">#{value},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="remark != null">#{remark}</if>
+        </trim>
+    </insert>
+
+    <update id="updateClientConfig" parameterType="ClientConfig">
+        update client_config
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="key != null and key != ''">`key` = #{key},</if>
+            <if test="value != null and value != ''">`value` = #{value},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="remark != null">remark = #{remark},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteClientConfigById" parameterType="Long">
+        delete from client_config where id = #{id}
+    </delete>
+
+    <delete id="deleteClientConfigByIds" parameterType="String">
+        delete from client_config where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+</mapper>

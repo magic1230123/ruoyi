@@ -1,0 +1,169 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.magic.ruoyiapi.mapper.ClientUserMapper">
+
+    <resultMap type="com.magic.ruoyiapi.entity.ClientUser" id="ClientUserResult">
+        <result property="id" column="id"/>
+        <result property="phone" column="phone"/>
+        <result property="state" column="state"/>
+        <result property="device" column="device"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="ip" column="ip"/>
+    </resultMap>
+
+    <sql id="selectClientUserVo">
+        select id, phone, state, device, create_time, update_time, ip
+        from client_user
+    </sql>
+
+    <select id="selectClientUserList" parameterType="ClientUser" resultMap="ClientUserResult">
+        <include refid="selectClientUserVo"/>
+        <where>
+            <if test="phone != null  and phone != ''">and phone = #{phone}</if>
+            <if test="state != null ">and state = #{state}</if>
+            <if test="device != null  and device != ''">and device = #{device}</if>
+            <if test="ip != null  and ip != ''">and ip = #{ip}</if>
+            <if test="params.beginTime != null and params.beginTime != ''"><!-- 开始时间检索 -->
+                AND date_format(create_time,'%y%m%d') &gt;= date_format(#{params.beginTime},'%y%m%d')
+            </if>
+            <if test="params.endTime != null and params.endTime != ''"><!-- 结束时间检索 -->
+                AND date_format(create_time,'%y%m%d') &lt;= date_format(#{params.endTime},'%y%m%d')
+            </if>
+        </where>
+    </select>
+
+    <select id="selectClientUserById" parameterType="Long" resultMap="ClientUserResult">
+        <include refid="selectClientUserVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertClientUser" parameterType="ClientUser" useGeneratedKeys="true" keyProperty="id">
+        insert into client_user
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="phone != null and phone != ''">phone,</if>
+            <if test="state != null">state,</if>
+            <if test="device != null">device,</if>
+            create_time,
+            <if test="updateTime != null">update_time,</if>
+            <if test="ip != null">ip,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="phone != null and phone != ''">#{phone},</if>
+            <if test="state != null">#{state},</if>
+            <if test="device != null">#{device},</if>
+            now(),
+            <if test="updateTime != null">#{updateTime},</if>
+            <if test="ip != null">#{ip},</if>
+        </trim>
+    </insert>
+
+    <update id="updateClientUser" parameterType="ClientUser">
+        update client_user
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="phone != null and phone != ''">phone = #{phone},</if>
+            <if test="state != null">state = #{state},</if>
+            <if test="device != null">device = #{device},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="updateTime != null">update_time = #{updateTime},</if>
+            <if test="ip != null">ip = #{ip},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteClientUserById" parameterType="Long">
+        delete
+        from client_user
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteClientUserByIds" parameterType="String">
+        delete from client_user where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+    <select id="getUserByPhone" resultMap="ClientUserResult">
+        select id, phone, state, device, create_time, update_time, ip
+        from client_user
+        where phone=#{phone}
+    </select>
+
+
+    <insert id="insertLoginRecord">
+        insert into client_login_record (phone, login_ip, login_time, device_id)
+        VALUES (#{phone}, #{ip}, now(), #{deviceId});
+        update client_user
+        set device      = #{deviceId},
+            update_time = now(),
+            ip          = #{ip}
+        where phone = #{phone};
+    </insert>
+
+
+    <resultMap type="com.magic.ruoyiapi.entity.ClientProduct" id="ClientProductResult">
+        <result property="id" column="id"/>
+        <result property="productName" column="product_name"/>
+        <result property="amountType" column="amount_type"/>
+        <result property="state" column="state"/>
+        <result property="sort" column="sort"/>
+        <result property="minAmount" column="min_amount"/>
+        <result property="maxAmount" column="max_amount"/>
+        <result property="rate" column="rate"/>
+        <result property="isRecommend" column="is_recommend"/>
+        <result property="des" column="des"/>
+        <result property="productLogo" column="product_logo"/>
+        <result property="productUrl" column="product_url"/>
+        <result property="productTag" column="product_tag"/>
+        <result property="upTime" column="up_time"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+    </resultMap>
+
+    <sql id="selectClientProductVo">
+        select id,
+               product_name,
+               amount_type,
+               state,
+               sort,
+               min_amount,
+               max_amount,
+               rate,
+               is_recommend,
+               des,
+               product_logo,
+               product_url,
+               product_tag,
+               up_time,
+               create_time,
+               update_time
+        from client_product
+    </sql>
+
+    <select id="getProductList" resultMap="ClientProductResult">
+        <include refid="selectClientProductVo"/>
+        order by sort desc
+    </select>
+
+
+    <insert id="insertRequestRecord">
+        insert
+        into client_request_record (phone, product_id, user_id, ip, create_time)
+        values (#{phone}, #{productId}, #{userId}, #{ip}, now())
+    </insert>
+
+    <update id="updateRequestRecord">
+        update client_request_record
+        set request_count = (request_count +1)
+        where user_id = #{id} and product_id = #{productId} and to_days(create_time) = to_days(now());
+    </update>
+
+
+    <insert id="insertSendSmsRecord">
+        insert
+        into client_sms_record (phone, code, send_time)
+        values (#{phone},#{code}, now())
+    </insert>
+</mapper>

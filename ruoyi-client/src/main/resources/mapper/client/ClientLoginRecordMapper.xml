@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.client.mapper.ClientLoginRecordMapper">
+    
+    <resultMap type="ClientLoginRecord" id="ClientLoginRecordResult">
+        <result property="id"    column="id"    />
+        <result property="phone"    column="phone"    />
+        <result property="loginTime"    column="login_time"    />
+    </resultMap>
+
+    <sql id="selectClientLoginRecordVo">
+        select id, phone, login_time from client_login_record
+    </sql>
+
+    <select id="selectClientLoginRecordList" parameterType="ClientLoginRecord" resultMap="ClientLoginRecordResult">
+        <include refid="selectClientLoginRecordVo"/>
+        <where>  
+            <if test="phone != null  and phone != ''"> and phone = #{phone}</if>
+            <if test="loginTime != null "> and login_time = #{loginTime}</if>
+        </where>
+    </select>
+    
+    <select id="selectClientLoginRecordById" parameterType="Long" resultMap="ClientLoginRecordResult">
+        <include refid="selectClientLoginRecordVo"/>
+        where id = #{id}
+    </select>
+        
+    <insert id="insertClientLoginRecord" parameterType="ClientLoginRecord">
+        insert into client_login_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="id != null">id,</if>
+            <if test="phone != null and phone != ''">phone,</if>
+            <if test="loginTime != null">login_time,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="id != null">#{id},</if>
+            <if test="phone != null and phone != ''">#{phone},</if>
+            <if test="loginTime != null">#{loginTime},</if>
+         </trim>
+    </insert>
+
+    <update id="updateClientLoginRecord" parameterType="ClientLoginRecord">
+        update client_login_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="phone != null and phone != ''">phone = #{phone},</if>
+            <if test="loginTime != null">login_time = #{loginTime},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteClientLoginRecordById" parameterType="Long">
+        delete from client_login_record where id = #{id}
+    </delete>
+
+    <delete id="deleteClientLoginRecordByIds" parameterType="String">
+        delete from client_login_record where id in 
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>

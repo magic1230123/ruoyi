@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.client.mapper.ClientRequestRecordMapper">
+
+    <resultMap type="ClientRequestRecord" id="ClientRequestRecordResult">
+        <result property="id"    column="id"    />
+        <result property="phone"    column="phone"    />
+        <result property="productId"    column="product_id"    />
+        <result property="productName"    column="product_name"    />
+        <result property="userId"    column="user_id"    />
+        <result property="ip"    column="ip"    />
+        <result property="createTime"    column="create_time"    />
+        <result property="requestCount"    column="request_count"    />
+    </resultMap>
+
+    <sql id="selectClientRequestRecordVo">
+        select id, phone, product_id, user_id, ip, create_time, request_count from client_request_record
+    </sql>
+
+    <sql id="selectClientRequestRecordVo1">
+        select a.id, a.phone, a.product_id, a.user_id, a.ip, a.create_time, a.request_count,b.product_name from client_request_record a
+        left join client_product b on(a.product_id = b.id)
+    </sql>
+
+    <select id="selectClientRequestRecordList" parameterType="ClientRequestRecord" resultMap="ClientRequestRecordResult">
+        <include refid="selectClientRequestRecordVo1"/>
+        <where>
+            <if test="phone != null  and phone != ''"> and a.phone = #{phone}</if>
+            <if test="productId != null "> and a.product_id = #{productId}</if>
+            <if test="userId != null "> and a.user_id = #{userId}</if>
+            <if test="ip != null  and ip != ''"> and a.ip = #{ip}</if>
+            <if test="requestCount != null "> and a.request_count = #{requestCount}</if>
+            <if test="productName != null "> and b.product_name = #{productName}</if>
+        </where>
+    </select>
+
+    <select id="selectClientRequestRecordById" parameterType="Long" resultMap="ClientRequestRecordResult">
+        <include refid="selectClientRequestRecordVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertClientRequestRecord" parameterType="ClientRequestRecord" useGeneratedKeys="true" keyProperty="id">
+        insert into client_request_record
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="phone != null">phone,</if>
+            <if test="productId != null">product_id,</if>
+            <if test="userId != null">user_id,</if>
+            <if test="ip != null">ip,</if>
+            <if test="createTime != null">create_time,</if>
+            <if test="requestCount != null">request_count,</if>
+         </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="phone != null">#{phone},</if>
+            <if test="productId != null">#{productId},</if>
+            <if test="userId != null">#{userId},</if>
+            <if test="ip != null">#{ip},</if>
+            <if test="createTime != null">#{createTime},</if>
+            <if test="requestCount != null">#{requestCount},</if>
+         </trim>
+    </insert>
+
+    <update id="updateClientRequestRecord" parameterType="ClientRequestRecord">
+        update client_request_record
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="phone != null">phone = #{phone},</if>
+            <if test="productId != null">product_id = #{productId},</if>
+            <if test="userId != null">user_id = #{userId},</if>
+            <if test="ip != null">ip = #{ip},</if>
+            <if test="createTime != null">create_time = #{createTime},</if>
+            <if test="requestCount != null">request_count = #{requestCount},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteClientRequestRecordById" parameterType="Long">
+        delete from client_request_record where id = #{id}
+    </delete>
+
+    <delete id="deleteClientRequestRecordByIds" parameterType="String">
+        delete from client_request_record where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+</mapper>
