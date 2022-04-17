@@ -4,14 +4,14 @@ servername:
   apiServer
 spring:
   application:
-    name: api
-    profiles:
-      # 环境配置
-      active: test
+    name: api-server
+  profiles:
+     # 环境配置
+    active: dfq
   cloud:
     nacos:
       config:
-        group: prod
+        group: api
         server-addr: 127.0.0.1:8848
         file-extension: yml
   session:
@@ -29,9 +29,12 @@ spring:
 mybatis:
   mapperLcations: classpath:com/magic/ruoyiapi/mapper/*.xml
   typeAliasesPackage: com.magic.ruoyiapi.entity
+
 logging:
   level:
-    com.magic : INFO
+    root: DEBUG
+    com.alibaba.nacos.client.config.impl: WARN
+  config: classpath:logback.xml
 redis:
   host: 127.0.0.1
   port: 6379
