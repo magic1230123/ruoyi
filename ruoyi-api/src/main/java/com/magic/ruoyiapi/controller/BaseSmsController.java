@@ -38,6 +38,7 @@ public class BaseSmsController {
         if (!MobileUtils.isMobileNo(query.getPhone())) {
             return new ApiResponse(ResponseCode._100034);
         }
+
         return baseSmsService.sendSmsCode(query);
     }
 

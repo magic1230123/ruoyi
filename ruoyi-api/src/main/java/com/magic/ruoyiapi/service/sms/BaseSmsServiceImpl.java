@@ -8,11 +8,11 @@ import com.magic.ruoyiapi.domain.dto.ResponseCode;
 import com.magic.ruoyiapi.domain.dto.SmsResultDto;
 import com.magic.ruoyiapi.mapper.ClientConfigMapper;
 import com.magic.ruoyiapi.mapper.ClientUserMapper;
-import com.magic.ruoyiapi.redis.RedisClientUtil;
 import com.magic.ruoyiapi.service.BaseClientUserService;
 import com.magic.ruoyiapi.utils.HttpUtils;
 import com.magic.ruoyiapi.utils.MobileUtils;
 import com.magic.ruoyiapi.utils.RandomUtils;
+import com.magic.ruoyiapi.utils.RedisUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +35,7 @@ public class BaseSmsServiceImpl implements BaseSmsService {
     private BaseClientUserService baseClientUserService;
 
     @Autowired
-    private RedisClientUtil redisClientUtil;
+    private RedisUtils redisUtils;
     @Resource
     private ClientConfigMapper clientConfigMapper;
     @Resource
@@ -70,7 +70,7 @@ public class BaseSmsServiceImpl implements BaseSmsService {
          * 手机号码验证码检查
          *********************************************************/
         String phoneKey = String.format("%s:%s", RedisKeyConstants.Sms.PHONE_PREFIX, phone);
-        Object pValue = redisClientUtil.get(phoneKey);
+        Object pValue = redisUtils.get(phoneKey);
         if (!ObjectUtils.isEmpty(pValue)) {
             String[] times = String.valueOf(pValue).split("_");
             // 最大次数
@@ -87,7 +87,7 @@ public class BaseSmsServiceImpl implements BaseSmsService {
          * 手机号码验证码Ip检查
          *********************************************************/
         String ipKey = String.format("%s:%s", RedisKeyConstants.Sms.IP_PREFIX, query.getRemoteIp());
-        Object ipValue = redisClientUtil.get(ipKey);
+        Object ipValue = redisUtils.get(ipKey);
         if (!ObjectUtils.isEmpty(ipValue)) {
             String time = String.valueOf(ipValue);
             // 最大次数
@@ -98,10 +98,10 @@ public class BaseSmsServiceImpl implements BaseSmsService {
         }
         String random = RandomUtils.getRandomNumber(4);
         // 缓存到redis里，用户后台校验，
-        redisClientUtil.set(String.format("%s:%s:%s", RedisKeyConstants.Sms.PHONE_PREFIX, SystemConstans.Sms.TYPE[query.getType()], phone), random, SystemConstans.Sms.VALID_TIME);
+        redisUtils.set(String.format("%s:%s:%s", RedisKeyConstants.Sms.PHONE_PREFIX, SystemConstans.Sms.TYPE[query.getType()], phone), random, SystemConstans.Sms.VALID_TIME);
         // 设置时间锁
-        redisClientUtil.set(phoneKey, String.format("%s_%s", phoneTime, now), SystemConstans.Sms.ONE_PHONE_LOCK_TIME);
-        redisClientUtil.set(ipKey, String.format("%s", ipTime), SystemConstans.Sms.ONE_IP_LOCK_TIME);
+        redisUtils.set(phoneKey, String.format("%s_%s", phoneTime, now), SystemConstans.Sms.ONE_PHONE_LOCK_TIME);
+        redisUtils.set(ipKey, String.format("%s", ipTime), SystemConstans.Sms.ONE_IP_LOCK_TIME);
         //发送短信验证码
         this.sendCode(phone, random);
         clientUserMapper.insertSendSmsRecord(phone,random);
@@ -119,13 +119,13 @@ public class BaseSmsServiceImpl implements BaseSmsService {
         if (WHITE_LIST.contains(String.format("%s:%s", phone, code))) {
             return true;
         }
-        Object smsCode = redisClientUtil.hmGet(RedisKeyConstants.WhiteList.SMS_WHITE_LIST, phone);
-        if (!ObjectUtils.isEmpty(smsCode) && code.equals(String.valueOf(smsCode))) {
-            return true;
-        }
+//        Object smsCode = redisUtils.hmGet(RedisKeyConstants.WhiteList.SMS_WHITE_LIST, phone);
+//        if (!ObjectUtils.isEmpty(smsCode) && code.equals(String.valueOf(smsCode))) {
+//            return true;
+//        }
 
         String key = String.format("%s:%s:%s", RedisKeyConstants.Sms.PHONE_PREFIX, SystemConstans.Sms.TYPE[type], phone);
-        Object value = redisClientUtil.get(key);
+        Object value = redisUtils.get(key);
         if (code.equals(value)) {
             return true;
         }

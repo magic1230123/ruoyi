@@ -5,7 +5,6 @@ import com.magic.ruoyiapi.contants.RedisKeyConstants;
 import com.magic.ruoyiapi.domain.dto.ApiResponse;
 import com.magic.ruoyiapi.mapper.ClientConfigMapper;
 import com.magic.ruoyiapi.mapper.ClientUserMapper;
-import com.magic.ruoyiapi.redis.RedisClientUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
