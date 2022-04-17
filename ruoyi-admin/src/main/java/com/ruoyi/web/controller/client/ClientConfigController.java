@@ -2,6 +2,8 @@ package com.ruoyi.web.controller.client;
 
 import java.util.List;
 import javax.servlet.http.HttpServletResponse;
+
+import com.ruoyi.client.domain.vo.DataStatistics;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -100,5 +102,10 @@ public class ClientConfigController extends BaseController
     public AjaxResult remove(@PathVariable Long[] ids)
     {
         return toAjax(clientConfigService.deleteClientConfigByIds(ids));
+    }
+
+    @GetMapping("/dataStatistics")
+    public DataStatistics dataStatistics(){
+        return clientConfigService.dataStatistics();
     }
 }
