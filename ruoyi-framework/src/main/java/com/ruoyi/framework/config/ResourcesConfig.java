@@ -15,7 +15,7 @@ import com.ruoyi.framework.interceptor.RepeatSubmitInterceptor;
 
 /**
  * 通用配置
- * 
+ *
  * @author ruoyi
  */
 @Configuration
@@ -51,20 +51,34 @@ public class ResourcesConfig implements WebMvcConfigurer
     @Bean
     public CorsFilter corsFilter()
     {
-        CorsConfiguration config = new CorsConfiguration();
-        config.setAllowCredentials(true);
-        // 设置访问源地址
-        config.addAllowedOriginPattern("*");
-        // 设置访问源请求头
-        config.addAllowedHeader("*");
-        // 设置访问源请求方法
-        config.addAllowedMethod("*");
-        // 有效期 1800秒
-        config.setMaxAge(1800L);
-        // 添加映射路径，拦截一切请求
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+        final UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
+
+        final CorsConfiguration config = new CorsConfiguration();
+
+        config.setAllowCredentials(true); // 允许cookies跨域
+
+        config.addAllowedOrigin("*");// #允许向该服务器提交请求的URI，*表示全部允许，在SpringMVC中，如果设成*，会自动转成当前请求头中的Origin
+
+        config.addAllowedHeader("*");// #允许访问的头信息,*表示全部
+
+        config.setMaxAge(18000L);// 预检请求的缓存时间（秒），即在这个时间段里，对于相同的跨域请求不会再预检了
+
+        config.addAllowedMethod("OPTIONS");// 允许提交请求的方法，*表示全部允许
+
+        config.addAllowedMethod("HEAD");
+
+        config.addAllowedMethod("GET");// 允许Get的请求方法
+
+        config.addAllowedMethod("PUT");
+
+        config.addAllowedMethod("POST");
+
+        config.addAllowedMethod("DELETE");
+
+        config.addAllowedMethod("PATCH");
+
         source.registerCorsConfiguration("/**", config);
-        // 返回新的CorsFilter
+
         return new CorsFilter(source);
     }
 }
