@@ -159,7 +159,7 @@
 <!--          <p v-if="scope.row.isRecommend=='1'">是</p>-->
 <!--        </template>-->
 <!--      </el-table-column>-->
-<!--      <el-table-column label="产品描述" align="center" prop="des" />-->
+      <el-table-column label=产品期限 align="center" prop="des" />
       <el-table-column label="产品logo" align="center" prop="productLogo" width="100">
         <template slot-scope="scope">
           <image-preview :src="scope.row.productLogo" :width="50" :height="50"/>
@@ -224,8 +224,8 @@
 <!--        <el-form-item label="是否首页推荐 0否1是" prop="isRecommend">-->
 <!--          <el-input v-model="form.isRecommend" placeholder="请输入是否首页推荐 0否1是" />-->
 <!--        </el-form-item>-->
-        <el-form-item label="产品描述" prop="des">
-          <el-input v-model="form.des" type="textarea" placeholder="请输入内容" />
+        <el-form-item label="产品期限" prop="des">
+          <el-input v-model="form.des" type="textarea" placeholder="请输入产品期限" />
         </el-form-item>
         <el-form-item label="产品logo">
           <image-upload v-model="form.productLogo"/>

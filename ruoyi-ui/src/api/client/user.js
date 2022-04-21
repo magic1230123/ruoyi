@@ -42,3 +42,11 @@ export function delUser(id) {
     method: 'delete'
   })
 }
+
+// 删除用户
+export function getTotal() {
+  return request({
+    url: '/client/config/dataStatistics',
+    method: 'get'
+  })
+}

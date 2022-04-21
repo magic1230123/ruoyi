@@ -35,7 +35,7 @@ export default {
   },
   data() {
     return {
-      title: '及速贷管理系统',
+      title: '七猫贷款花管理系统',
       logo: logoImg
     }
   }
