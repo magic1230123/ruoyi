@@ -1,5 +1,5 @@
 server:
-  port: 8039
+  port: 8036
 servername:
   apiServer
 spring:

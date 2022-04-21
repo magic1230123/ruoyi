@@ -1,0 +1,161 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.ruoyi.client.mapper.ClientBusinessMapper">
+
+    <resultMap type="ClientBusiness" id="ClientBusinessResult">
+        <result property="id" column="id"/>
+        <result property="date" column="date"/>
+        <result property="loginNum" column="login_num"/>
+        <result property="allUv" column="all_uv"/>
+        <result property="yuUv" column="yu_uv"/>
+        <result property="todayUv" column="today_uv"/>
+        <result property="uvChengben" column="uv_chengben"/>
+        <result property="loginChanchu" column="login_chanchu"/>
+        <result property="zhichu" column="zhichu"/>
+        <result property="shouru" column="shouru"/>
+        <result property="lirun" column="lirun"/>
+    </resultMap>
+
+    <sql id="selectClientBusinessVo">
+        select id, date, login_num, all_uv, yu_uv, today_uv, uv_chengben, login_chanchu, zhichu, shouru, lirun
+        from client_business
+    </sql>
+
+    <select id="selectClientBusinessList" parameterType="ClientBusiness" resultMap="ClientBusinessResult">
+        <include refid="selectClientBusinessVo"/>
+        <where>
+        </where>
+    </select>
+
+    <select id="selectClientBusinessById" parameterType="Long" resultMap="ClientBusinessResult">
+        <include refid="selectClientBusinessVo"/>
+        where id = #{id}
+    </select>
+
+    <insert id="insertClientBusiness" parameterType="ClientBusiness" useGeneratedKeys="true" keyProperty="id">
+        insert into client_business
+        <trim prefix="(" suffix=")" suffixOverrides=",">
+            <if test="date != null">date,</if>
+            <if test="loginNum != null">login_num,</if>
+            <if test="allUv != null">all_uv,</if>
+            <if test="yuUv != null">yu_uv,</if>
+            <if test="todayUv != null">today_uv,</if>
+            <if test="uvChengben != null">uv_chengben,</if>
+            <if test="loginChanchu != null">login_chanchu,</if>
+            <if test="zhichu != null">zhichu,</if>
+            <if test="shouru != null">shouru,</if>
+            <if test="lirun != null">lirun,</if>
+        </trim>
+        <trim prefix="values (" suffix=")" suffixOverrides=",">
+            <if test="date != null">#{date},</if>
+            <if test="loginNum != null">#{loginNum},</if>
+            <if test="allUv != null">#{allUv},</if>
+            <if test="yuUv != null">#{yuUv},</if>
+            <if test="todayUv != null">#{todayUv},</if>
+            <if test="uvChengben != null">#{uvChengben},</if>
+            <if test="loginChanchu != null">#{loginChanchu},</if>
+            <if test="zhichu != null">#{zhichu},</if>
+            <if test="shouru != null">#{shouru},</if>
+            <if test="lirun != null">#{lirun},</if>
+        </trim>
+    </insert>
+
+    <update id="updateClientBusiness" parameterType="ClientBusiness">
+        update client_business
+        <trim prefix="SET" suffixOverrides=",">
+            <if test="date != null">date = #{date},</if>
+            <if test="loginNum != null">login_num = #{loginNum},</if>
+            <if test="allUv != null">all_uv = #{allUv},</if>
+            <if test="yuUv != null">yu_uv = #{yuUv},</if>
+            <if test="todayUv != null">today_uv = #{todayUv},</if>
+            <if test="uvChengben != null">uv_chengben = #{uvChengben},</if>
+            <if test="loginChanchu != null">login_chanchu = #{loginChanchu},</if>
+            <if test="zhichu != null">zhichu = #{zhichu},</if>
+            <if test="shouru != null">shouru = #{shouru},</if>
+            <if test="lirun != null">lirun = #{lirun},</if>
+        </trim>
+        where id = #{id}
+    </update>
+
+    <delete id="deleteClientBusinessById" parameterType="Long">
+        delete
+        from client_business
+        where id = #{id}
+    </delete>
+
+    <delete id="deleteClientBusinessByIds" parameterType="String">
+        delete from client_business where id in
+        <foreach item="id" collection="array" open="(" separator="," close=")">
+            #{id}
+        </foreach>
+    </delete>
+
+
+    <select id="selectClientBusinessToday" parameterType="java.lang.String"
+            resultType="com.ruoyi.client.domain.ClientBusiness">
+        SELECT ifnull(( SELECT COUNT( 1 ) FROM client_login_record WHERE TO_DAYS( login_time ) = TO_DAYS( now()) GROUP BY phone ),
+                      0
+                   ) AS loginNum,
+               (
+                   SELECT
+                       IFNULL( COUNT( 1 ), 0 )
+                   FROM
+                       (
+                           SELECT
+                               crr.id
+                           FROM
+                               client_request_record crr
+                                   LEFT JOIN client_user cu ON ( crr.user_id = cu.id )
+                           WHERE
+                                   TO_DAYS( crr.create_time ) = TO_DAYS(
+                                       now())
+                             AND TO_DAYS( cu.create_time )!= TO_DAYS(
+			now())
+                           GROUP BY
+                               product_id,
+                               user_id
+                       ) a
+               ) AS yuUv,
+               (
+                   SELECT
+                       IFNULL( COUNT( 1 ), 0 )
+                   FROM
+                       (
+                           SELECT
+                               crr.id
+                           FROM
+                               client_request_record crr
+                                   LEFT JOIN client_user cu ON ( crr.user_id = cu.id )
+                           WHERE
+                                   TO_DAYS( crr.create_time ) = TO_DAYS(
+                                       now())
+                             AND TO_DAYS( cu.create_time )= TO_DAYS(
+                                   now())
+                           GROUP BY
+                               product_id,
+                               user_id
+                       ) a
+               ) AS todayUv,
+               (
+                   SELECT
+                       IFNULL( COUNT( 1 ), 0 )
+                   FROM
+                       (
+                           SELECT
+                               crr.id
+                           FROM
+                               client_request_record crr
+                                   LEFT JOIN client_user cu ON ( crr.user_id = cu.id )
+                           WHERE
+                                   TO_DAYS( crr.create_time ) = TO_DAYS(
+                                       now())
+                           GROUP BY
+                               product_id,
+                               user_id
+                       ) a
+               ) AS allUv,
+               0 AS uvChengben
+    </select>
+</mapper>
