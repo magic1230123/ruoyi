@@ -1,27 +1,28 @@
 <?xml version="1.0" encoding="UTF-8" ?>
 <!DOCTYPE mapper
-PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
-"http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.ruoyi.client.mapper.ClientConfigMapper">
 
     <resultMap type="ClientConfig" id="ClientConfigResult">
-        <result property="id"    column="id"    />
-        <result property="key"    column="key"    />
-        <result property="value"    column="value"    />
-        <result property="createTime"    column="create_time"    />
-        <result property="updateTime"    column="update_time"    />
-        <result property="remark"    column="remark"    />
+        <result property="id" column="id"/>
+        <result property="key" column="key"/>
+        <result property="value" column="value"/>
+        <result property="createTime" column="create_time"/>
+        <result property="updateTime" column="update_time"/>
+        <result property="remark" column="remark"/>
     </resultMap>
 
     <sql id="selectClientConfigVo">
-        select id, `key`, `value`, create_time,remark, update_time from client_config
+        select id, `key`, `value`, create_time, remark, update_time
+        from client_config
     </sql>
 
     <select id="selectClientConfigList" parameterType="ClientConfig" resultMap="ClientConfigResult">
         <include refid="selectClientConfigVo"/>
         <where>
-            <if test="key != null  and key != ''"> and key = #{key}</if>
-            <if test="value != null  and value != ''"> and value = #{value}</if>
+            <if test="key != null  and key != ''">and key = #{key}</if>
+            <if test="value != null  and value != ''">and value = #{value}</if>
         </where>
     </select>
 
@@ -39,7 +40,7 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
             <if test="createTime != null">create_time,</if>
             <if test="updateTime != null">update_time,</if>
             <if test="remark != null">remark,</if>
-         </trim>
+        </trim>
         <trim prefix="values (" suffix=")" suffixOverrides=",">
             <if test="id != null">#{id},</if>
             <if test="key != null and key != ''">#{key},</if>
@@ -63,7 +64,9 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
     </update>
 
     <delete id="deleteClientConfigById" parameterType="Long">
-        delete from client_config where id = #{id}
+        delete
+        from client_config
+        where id = #{id}
     </delete>
 
     <delete id="deleteClientConfigByIds" parameterType="String">
@@ -73,5 +76,53 @@ PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         </foreach>
     </delete>
 
+
+    <select id="dataStatistics" resultType="com.ruoyi.client.domain.vo.DataStatistics">
+        SELECT a.num AS todayLoginNum,
+               b.num AS todayRegisterNum,
+               c.num AS allRegisterNum
+        FROM (
+                 SELECT count(DISTINCT phone) AS num
+                 FROM client_login_record
+                 WHERE TO_DAYS(login_time) = TO_DAYS(
+                         NOW())) a,
+             (
+                 SELECT count(id) AS num
+                 FROM client_user
+                 WHERE TO_DAYS(create_time) = TO_DAYS(
+                         NOW())) b,
+             (SELECT count(id) AS num FROM client_user) c
+
+    </select>
+
+    <select id="todayUv" resultType="com.ruoyi.client.domain.vo.ProductData">
+        SELECT a.product_name as productName, IFNULL(b.todayDj, 0) as uv, IFNULL(b.todayUv, 0) as requestNum
+        FROM client_product a
+                 LEFT JOIN
+             (
+                 SELECT a.product_id         AS todayProductId,
+                        b.product_name       AS todayProductName,
+                        COUNT(a.id)          AS todayUv,
+                        sum(a.request_count) AS todayDj
+                 FROM client_product b
+                          left join client_request_record a on (a.product_id = b.id)
+                 WHERE TO_DAYS(a.create_time) = TO_DAYS(NOW())
+                 GROUP BY a.product_id) b on (a.id = b.todayProductId)
+
+    </select>
+    <select id="allUv" resultType="com.ruoyi.client.domain.vo.ProductData">
+        SELECT a.product_name as productName, IFNULL(b.todayDj, 0) as uv, IFNULL(b.todayUv, 0) as requestNum
+        FROM client_product a
+                 LEFT JOIN
+             (
+                 SELECT a.product_id         AS todayProductId,
+                        b.product_name       AS todayProductName,
+                        COUNT(a.id)          AS todayUv,
+                        sum(a.request_count) AS todayDj
+                 FROM client_product b
+                          left join client_request_record a on (a.product_id = b.id)
+
+                 GROUP BY a.product_id) b on (a.id = b.todayProductId)
+    </select>
 
 </mapper>

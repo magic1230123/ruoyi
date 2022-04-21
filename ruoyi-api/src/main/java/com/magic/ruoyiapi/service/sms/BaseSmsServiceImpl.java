@@ -8,11 +8,12 @@ import com.magic.ruoyiapi.domain.dto.ResponseCode;
 import com.magic.ruoyiapi.domain.dto.SmsResultDto;
 import com.magic.ruoyiapi.mapper.ClientConfigMapper;
 import com.magic.ruoyiapi.mapper.ClientUserMapper;
+import com.magic.ruoyiapi.redis.RedisClientUtil;
 import com.magic.ruoyiapi.service.BaseClientUserService;
 import com.magic.ruoyiapi.utils.HttpUtils;
 import com.magic.ruoyiapi.utils.MobileUtils;
 import com.magic.ruoyiapi.utils.RandomUtils;
-import com.magic.ruoyiapi.utils.RedisUtils;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -35,7 +36,7 @@ public class BaseSmsServiceImpl implements BaseSmsService {
     private BaseClientUserService baseClientUserService;
 
     @Autowired
-    private RedisUtils redisUtils;
+    private RedisClientUtil redisUtils;
     @Resource
     private ClientConfigMapper clientConfigMapper;
     @Resource

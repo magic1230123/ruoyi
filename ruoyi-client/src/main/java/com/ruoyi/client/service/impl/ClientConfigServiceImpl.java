@@ -1,6 +1,9 @@
 package com.ruoyi.client.service.impl;
 
+import java.util.HashMap;
 import java.util.List;
+
+import com.ruoyi.client.domain.vo.DataStatistics;
 import com.ruoyi.common.utils.DateUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -10,19 +13,19 @@ import com.ruoyi.client.service.IClientConfigService;
 
 /**
  * 配置Service业务层处理
- * 
+ *
  * @author magic
  * @date 2022-04-14
  */
 @Service
-public class ClientConfigServiceImpl implements IClientConfigService 
+public class ClientConfigServiceImpl implements IClientConfigService
 {
     @Autowired
     private ClientConfigMapper clientConfigMapper;
 
     /**
      * 查询配置
-     * 
+     *
      * @param id 配置主键
      * @return 配置
      */
@@ -34,7 +37,7 @@ public class ClientConfigServiceImpl implements IClientConfigService
 
     /**
      * 查询配置列表
-     * 
+     *
      * @param clientConfig 配置
      * @return 配置
      */
@@ -46,7 +49,7 @@ public class ClientConfigServiceImpl implements IClientConfigService
 
     /**
      * 新增配置
-     * 
+     *
      * @param clientConfig 配置
      * @return 结果
      */
@@ -59,7 +62,7 @@ public class ClientConfigServiceImpl implements IClientConfigService
 
     /**
      * 修改配置
-     * 
+     *
      * @param clientConfig 配置
      * @return 结果
      */
@@ -72,7 +75,7 @@ public class ClientConfigServiceImpl implements IClientConfigService
 
     /**
      * 批量删除配置
-     * 
+     *
      * @param ids 需要删除的配置主键
      * @return 结果
      */
@@ -84,7 +87,7 @@ public class ClientConfigServiceImpl implements IClientConfigService
 
     /**
      * 删除配置信息
-     * 
+     *
      * @param id 配置主键
      * @return 结果
      */
@@ -92,5 +95,15 @@ public class ClientConfigServiceImpl implements IClientConfigService
     public int deleteClientConfigById(Long id)
     {
         return clientConfigMapper.deleteClientConfigById(id);
+    }
+
+
+    @Override
+    public DataStatistics dataStatistics() {
+        DataStatistics dataStatistics = new DataStatistics();
+        dataStatistics = clientConfigMapper.dataStatistics();
+        dataStatistics.setTodayUv(clientConfigMapper.todayUv());
+        dataStatistics.setAllUv(clientConfigMapper.allUv());
+        return dataStatistics;
     }
 }

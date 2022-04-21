@@ -13,6 +13,8 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.bind.annotation.RestController;
 
 import javax.servlet.http.HttpServletRequest;
+import java.util.concurrent.Callable;
+import java.util.concurrent.FutureTask;
 
 /**
  * 客户管理
@@ -20,7 +22,7 @@ import javax.servlet.http.HttpServletRequest;
  */
 @RestController
 @RequestMapping("/s1/clientUser")
-public class BaseClientUserController {
+public class BaseClientUserController{
 
     @Autowired(required = false)
     private BaseClientUserService baseClientUserService;
@@ -38,5 +40,4 @@ public class BaseClientUserController {
         query.setRemoteIp(ip);
         return baseClientUserService.smsLogin(query);
     }
-
 }
